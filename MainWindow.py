@@ -106,7 +106,10 @@ class MainWindow(object):
     def setStudyView(self,index):
         self.studyModel.clear()
         self.patient.setPatientSelectedByIndex(self.patientModel.itemFromIndex(index).index().row())
-        self.study = Study(self.patient.getPatientChildrenByIndex(self.patient.getIndexPatientSelected()))
+        self.study = Study(
+            self.patient.getPatientChildrenByIndex(
+                self.patient.getIndexPatientSelected())
+                )
         for study in self.study.getStudies():
             StudyID = study.StudyID
             StudyDescription = study.StudyDescription
