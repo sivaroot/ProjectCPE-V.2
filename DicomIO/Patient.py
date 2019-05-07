@@ -8,6 +8,13 @@ class Patient:
         self.baseDir = dirname(self.filepath)
         self.dicomDir = read_dicomdir(self.filepath)
         self.patientRecords = self.dicomDir.patient_records
+        self.patientSelected = None
+
+    def setPatientSelectedByIndex(self,index):
+        self.patientSelected = index
+
+    def getIndexPatientSelected(self):
+        return self.patientSelected
 
     def getFilepath(self):
         return self.filepath
@@ -23,21 +30,27 @@ class Patient:
     
     def getPatientByIndex(self,index):
         lenRecord = len(self.patientRecords) 
-        if checkIndexInRange(index) : 
-            return self.dicom_dir.patient_records[index]
+        if self.checkIndexInRange(index) : 
+            return self.dicomDir.patient_records[index]
+        else :
+            return -1
+    def getPatientChildrenByIndex(self,index):
+        lenRecord = len(self.patientRecords) 
+        if self.checkIndexInRange(index) : 
+            return self.dicomDir.patient_records[index].children
         else :
             return -1
 
     def getPatientIdByIndex(self,index):
         lenRecord = len(self.patientRecords) 
-        if checkIndexInRange(index) : 
-            return self.dicom_dir.patient_records[index].PatientID
+        if self.checkIndexInRange(index) : 
+            return self.dicomDir.patient_records[index].PatientID
         else :
             return -1
     def getPatientNameByIndex(self,index):
         lenRecord = len(self.patientRecords) 
-        if checkIndexInRange(index) : 
-            return self.dicom_dir.patient_records[index].PatientName
+        if self.checkIndexInRange(index) : 
+            return self.dicomDir.patient_records[index].PatientName
         else :
             return -1
 

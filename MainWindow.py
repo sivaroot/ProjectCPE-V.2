@@ -2,11 +2,12 @@ from PyQt5.QtWidgets import QWidget,QTableWidget, QApplication, QMainWindow, QFi
 from PyQt5 import QtCore, QtGui, QtWidgets
 from vtk.qt.QVTKRenderWindowInteractor import *
 from DicomIO.Patient import *
+from DicomIO.Study import *
 from DicomIO.FileDialog import *
-from DicomIO.FileDialog import FileDialog
 class MainWindow(object):
 
     patient = None
+    study = None
     def setupUi(self, MainWindow):
         self.MainWindow = MainWindow
 
@@ -101,12 +102,17 @@ class MainWindow(object):
                 self.patientModel.appendRow(it)
         
 
-    def writeMetaimage(self):
+    
+    def setStudyView(self,index):
+        self.studyModel.clear()
+        self.patient.setPatientSelectedByIndex(self.patientModel.itemFromIndex(index).index().row())
+        self.study = Study(self.patient.getPatientChildrenByIndex(self.patient.getIndexPatientSelected()))
+        for study in self.study.getStudies():
+            StudyID = study.StudyID
+            StudyDescription = study.StudyDescription
+            it = QtGui.QStandardItem("%s\t%s"%(StudyID,StudyDescription))
+            self.studyModel.appendRow(it)
 
-        return 0
-    def setStudyView(self):
-
-        return 0
     def setSeriesView(self):
 
         return 0
@@ -116,5 +122,9 @@ class MainWindow(object):
         return 0
     
     def setDicomView(self):
+
+        return 0
+    
+    def writeMetaimage(self):
 
         return 0
