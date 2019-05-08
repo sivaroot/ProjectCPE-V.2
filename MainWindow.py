@@ -8,6 +8,7 @@ from DicomIO.Serie import *
 from DicomIO.Image import *
 from DicomIO.FileDialog import *
 from FeatureExtraction.ImageExtraction import *
+import vtk
 class MainWindow(object):
 
     fileIO = None
@@ -68,10 +69,10 @@ class MainWindow(object):
         self.dicomView = QtWidgets.QLabel(self.centralwidget)
         self.dicomView.setGeometry(QtCore.QRect(330, 50, 396, 396))
         self.dicomView.setObjectName("dicomView")
-
-        self.segmentView = QtWidgets.QLabel(self.centralwidget)
-        self.segmentView.setGeometry(QtCore.QRect(741,50,396,396))
-        self.segmentView.setObjectName('segmentView')
+        self.dicomView.setStyleSheet("background-color:#000000;")
+        # self.segmentView = QtWidgets.QLabel(self.centralwidget)
+        # self.segmentView.setGeometry(QtCore.QRect(741,50,396,396))
+        # self.segmentView.setObjectName('segmentView')
 
         self.logView = QtWidgets.QListView(self.centralwidget)
         self.logView.setGeometry(QtCore.QRect(330,461,600,172))
@@ -81,6 +82,13 @@ class MainWindow(object):
       
         self.vtkWidget = QVTKRenderWindowInteractor(self.centralwidget)
         self.vtkWidget.setGeometry(QtCore.QRect(741,50,396,396))
+        self.vtkWidget.setStyleSheet("background-color:#000000;")
+        self.ren1 = vtk.vtkRenderer()
+        self.ren1.SetBackground(0,0,0)
+        self.vtkWidget.GetRenderWindow().AddRenderer(self.ren1)
+        iren = self.vtkWidget.GetRenderWindow().GetInteractor()
+        iren.Start()
+
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -147,7 +155,7 @@ class MainWindow(object):
         # self.dicomView.setPixmap(self.image.getQPixmapByIndexSelected())
         kmeanImage = ImageExtraction(self.image.getPILSelected())
         self.dicomView.setPixmap(kmeanImage.kMeanExtraction(self.image.getPILSelected()))
-        
+
     def writeMetaimage(self):
 
         return 0
