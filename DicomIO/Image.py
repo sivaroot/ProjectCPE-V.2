@@ -36,6 +36,10 @@ class Image:
     
     def getImage_filenames(self):
         return self.image_filenames
+        
+    def getPILSelected(self):
+        dataset = pydicom.dcmread(self.image_filenames[Image.IndexImageSelected])
+        return self.get_PIL_image(dataset)
     
     def getQPixmapByIndexSelected(self):
         dataset = pydicom.dcmread(self.image_filenames[Image.IndexImageSelected])

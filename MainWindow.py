@@ -7,6 +7,7 @@ from DicomIO.Study import *
 from DicomIO.Serie import *
 from DicomIO.Image import *
 from DicomIO.FileDialog import *
+from FeatureExtraction.ImageExtraction import *
 class MainWindow(object):
 
     fileIO = None
@@ -143,8 +144,10 @@ class MainWindow(object):
 
     def setDicomView(self,index):
         self.image.setImageSelectedByIndex(self.imagesModel.itemFromIndex(index).index().row())
-        self.dicomView.setPixmap(self.image.getQPixmapByIndexSelected())
-    
+        # self.dicomView.setPixmap(self.image.getQPixmapByIndexSelected())
+        kmeanImage = ImageExtraction(self.image.getPILSelected())
+        self.dicomView.setPixmap(kmeanImage.kMeanExtraction(self.image.getPILSelected()))
+        
     def writeMetaimage(self):
 
         return 0
