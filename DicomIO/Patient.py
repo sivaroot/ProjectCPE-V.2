@@ -3,18 +3,20 @@ from pydicom.filereader import read_dicomdir
 from os.path import dirname
 
 class Patient:
+
+    IndexPatientSelected = -1
+
     def __init__(self,filepath):
         self.filepath = filepath
         self.baseDir = dirname(self.filepath)
         self.dicomDir = read_dicomdir(self.filepath)
         self.patientRecords = self.dicomDir.patient_records
-        self.patientSelected = None
 
     def setPatientSelectedByIndex(self,index):
-        self.patientSelected = index
+        Patient.IndexPatientSelected = index
 
     def getIndexPatientSelected(self):
-        return self.patientSelected
+        return Patient.IndexPatientSelected
 
     def getFilepath(self):
         return self.filepath
@@ -27,6 +29,10 @@ class Patient:
     
     def getPatients(self):
         return self.patientRecords
+
+    def getPatientChildren(self):
+        if Patient.IndexPatientSelected  != -1:
+            return self.getPatientByIndex(Patient.IndexPatientSelected).children
     
     def getPatientByIndex(self,index):
         lenRecord = len(self.patientRecords) 

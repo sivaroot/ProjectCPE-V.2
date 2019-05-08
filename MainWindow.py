@@ -1,13 +1,19 @@
 from PyQt5.QtWidgets import QWidget,QTableWidget, QApplication, QMainWindow, QFileDialog, QPushButton,QHeaderView,QTableWidgetItem,QListView
 from PyQt5 import QtCore, QtGui, QtWidgets
 from vtk.qt.QVTKRenderWindowInteractor import *
+from DicomIO.FileIO import *
 from DicomIO.Patient import *
 from DicomIO.Study import *
+from DicomIO.Serie import *
+from DicomIO.Image import *
 from DicomIO.FileDialog import *
 class MainWindow(object):
 
+    fileIO = None
     patient = None
     study = None
+    serie = None
+    image = None
     def setupUi(self, MainWindow):
         self.MainWindow = MainWindow
 
@@ -94,7 +100,8 @@ class MainWindow(object):
         filepath = dialog.openFileNameDialog(title="Open DICOMDIR",typeFile=FileDialog.CS_DICOMDIR)
         del dialog
         if filepath:
-            self.patient = Patient(filepath)
+            self.fileIO = FileIO(filepath)
+            self.patient = Patient(self.fileIO.getFilePath())
             for patient in self.patient.getPatients():
                 ID = patient.PatientID
                 NAME = str(patient.PatientName).replace('^',' ')
@@ -106,22 +113,32 @@ class MainWindow(object):
     def setStudyView(self,index):
         self.studyModel.clear()
         self.patient.setPatientSelectedByIndex(self.patientModel.itemFromIndex(index).index().row())
-        self.study = Study(
-            self.patient.getPatientChildrenByIndex(
-                self.patient.getIndexPatientSelected())
-                )
+        self.study = Study(self.patient.getPatientChildren())
         for study in self.study.getStudies():
             StudyID = study.StudyID
             StudyDescription = study.StudyDescription
             it = QtGui.QStandardItem("%s\t%s"%(StudyID,StudyDescription))
             self.studyModel.appendRow(it)
 
-    def setSeriesView(self):
+    def setSeriesView(self,index):
+        self.seriesModel.clear()
+        self.study.setStudySelectedByIndex(self.studyModel.itemFromIndex(index).index().row())
+        self.serie = Serie(self.study.getStudyChildren())
+        for serie in self.serie.getSeries():
+            image_count = len(serie.children)
+            plural = ('', 's')[image_count > 1]
+            if 'SeriesDescription' not in serie:
+                serie.SeriesDescription = "N/A"
+            it = QtGui.QStandardItem("Series {}: {} ({} image{})".format(serie.Modality, serie.SeriesDescription,image_count, plural))
+            self.seriesModel.appendRow(it)
 
-        return 0
-
-    def setImagesView(self):
-
+    def setImagesView(self,index):
+        self.imagesModel.clear()
+        self.serie.setSerieSelectedByIndex(self.seriesModel.itemFromIndex(index).index().row())
+        self.image = Image(self.serie.getSerieChildren(),self.fileIO.getBaseDir())
+        for img in self.image.getImage_filenames():
+            it = QtGui.QStandardItem(img)
+            self.imagesModel.appendRow(it)
         return 0
     
     def setDicomView(self):
