@@ -8,6 +8,8 @@ from DicomIO.Serie import *
 from DicomIO.Image import *
 from DicomIO.FileDialog import *
 from FeatureExtraction.ImageExtraction import *
+from FeatureExtraction.MetaImage import *
+from Render.VolumeRender import *
 import vtk
 class MainWindow(object):
 
@@ -58,7 +60,6 @@ class MainWindow(object):
         self.seriesView.setModel(self.seriesModel)
         self.seriesView.clicked[QtCore.QModelIndex].connect(self.setImagesView)
 
-
         self.imagesView = QtWidgets.QListView(self.centralwidget)
         self.imagesView.setGeometry(QtCore.QRect(15,420,300,210))
         self.imagesView.setObjectName("imagesView")
@@ -70,10 +71,7 @@ class MainWindow(object):
         self.dicomView.setGeometry(QtCore.QRect(330, 50, 396, 396))
         self.dicomView.setObjectName("dicomView")
         self.dicomView.setStyleSheet("background-color:#000000;")
-        # self.segmentView = QtWidgets.QLabel(self.centralwidget)
-        # self.segmentView.setGeometry(QtCore.QRect(741,50,396,396))
-        # self.segmentView.setObjectName('segmentView')
-
+       
         self.logView = QtWidgets.QListView(self.centralwidget)
         self.logView.setGeometry(QtCore.QRect(330,461,600,172))
         self.logView.setObjectName("imagesView")
@@ -89,7 +87,6 @@ class MainWindow(object):
         iren = self.vtkWidget.GetRenderWindow().GetInteractor()
         iren.Start()
 
-
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -101,9 +98,7 @@ class MainWindow(object):
 
     def getMainWindow(self):
         return self.MainWindow
-    
-    
-    
+     
     def setPatientView(self):
         self.patientModel.clear()
         dialog = FileDialog()
@@ -117,9 +112,7 @@ class MainWindow(object):
                 NAME = str(patient.PatientName).replace('^',' ')
                 it = QtGui.QStandardItem("%s\t%s"%(ID,NAME))
                 self.patientModel.appendRow(it)
-        
-
-    
+     
     def setStudyView(self,index):
         self.studyModel.clear()
         self.patient.setPatientSelectedByIndex(self.patientModel.itemFromIndex(index).index().row())
@@ -146,7 +139,7 @@ class MainWindow(object):
         self.imagesModel.clear()
         self.serie.setSerieSelectedByIndex(self.seriesModel.itemFromIndex(index).index().row())
         self.image = Image(self.serie.getSerieChildren(),self.fileIO.getBaseDir())
-        for img in self.image.getImage_filenames():
+        for img in self.image.getImageFiles():
             it = QtGui.QStandardItem(img)
             self.imagesModel.appendRow(it)
 
@@ -154,8 +147,13 @@ class MainWindow(object):
         self.image.setImageSelectedByIndex(self.imagesModel.itemFromIndex(index).index().row())
         # self.dicomView.setPixmap(self.image.getQPixmapByIndexSelected())
         kmeanImage = ImageExtraction(self.image.getPILSelected())
-        self.dicomView.setPixmap(kmeanImage.kMeanExtraction(self.image.getPILSelected()))
+        self.dicomView.setPixmap(kmeanImage.kMeanExtraction())
 
     def writeMetaimage(self):
+        imageFiles = self.image.getImageFiles()
+        metaImage = MetaImage()
+        metaImage.writeMetaimage(imageFiles)
+        render = VolumeRender(self.vtkWidget)
+
 
         return 0

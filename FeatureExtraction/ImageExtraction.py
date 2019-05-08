@@ -8,20 +8,16 @@ class ImageExtraction:
     def __init__(self,imagePIL):
         self.imageArr = self.convertPIL2Array(imagePIL)
         self.imageBgr = self.convertArray2BGR(self.imageArr)
-        self.kMeanExtraction(self.imageBgr)
 
     def convertPIL2Array(self,imagePIL):
         return np.array(imagePIL)
 
     def convertArray2BGR(self,imageArr):
         return cv2.cvtColor(imageArr, cv2.COLOR_RGB2BGR)
-    
-
-
-    def kMeanExtraction(self,PIL_Image):
-        img = cv2.cvtColor(np.array(PIL_Image), cv2.COLOR_RGB2BGR)
+   
+    def kMeanExtraction(self,mode=0):
+        img = cv2.cvtColor(self.imageArr, cv2.COLOR_RGB2BGR)
         img = cv2.blur(img,(3,3))
-        # img = cv2.imread('home.jpg')
         Z = img.reshape((-1,3))
 
         # convert to np.float32
@@ -43,8 +39,11 @@ class ImageExtraction:
 
         res = center[labelf]
         res2 = res.reshape((img.shape))
+        # ret,thresh = cv2.threshold(res2,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
         image_PIL = PILImage.fromarray(res2).resize((396, 396),PILImage.ANTIALIAS)
-        return QPixmap(QImage(ImageQt(image_PIL)))
-        # cv2.imshow('res2',res2)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+        if mode == 0:
+            return QPixmap(QImage(ImageQt(image_PIL)))
+        else:
+            return image_PIL
+        
+       
