@@ -96,6 +96,7 @@ class MainWindow(object):
     
     
     def setPatientView(self):
+        self.patientModel.clear()
         dialog = FileDialog()
         filepath = dialog.openFileNameDialog(title="Open DICOMDIR",typeFile=FileDialog.CS_DICOMDIR)
         del dialog
@@ -139,11 +140,10 @@ class MainWindow(object):
         for img in self.image.getImage_filenames():
             it = QtGui.QStandardItem(img)
             self.imagesModel.appendRow(it)
-        return 0
-    
-    def setDicomView(self):
 
-        return 0
+    def setDicomView(self,index):
+        self.image.setImageSelectedByIndex(self.imagesModel.itemFromIndex(index).index().row())
+        self.dicomView.setPixmap(self.image.getQPixmapByIndexSelected())
     
     def writeMetaimage(self):
 
