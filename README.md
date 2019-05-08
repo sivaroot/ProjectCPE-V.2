@@ -1,4 +1,4 @@
 # ProjectCPE-V.2
 
 # UI Design
-![UI Application](image/uiDesign.png)
+![UI Application](Image/uiDesign.png)
