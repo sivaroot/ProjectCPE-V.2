@@ -20,15 +20,12 @@ class ImageExtraction:
         img = cv2.blur(img,(3,3))
         Z = img.reshape((-1,3))
 
-        # convert to np.float32
         Z = np.float32(Z)
 
-        # define criteria, number of clusters(K) and apply kmeans()
         criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
         K = 3
         ret,label,center=cv2.kmeans(Z,K,None,criteria,10,cv2.KMEANS_RANDOM_CENTERS)
 
-        # Now convert back into uint8, and make original image
         center = np.uint8(center)
         cenTranspose = center.transpose()[0]
         indexMax = np.argmax(cenTranspose)
@@ -40,9 +37,10 @@ class ImageExtraction:
         res = center[labelf]
         res2 = res.reshape((img.shape))
         # ret,thresh = cv2.threshold(res2,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-        image_PIL = PILImage.fromarray(res2).resize((396, 396),PILImage.ANTIALIAS)
+        image_PIL = PILImage.fromarray(res2)
+        
         if mode == 0:
-            return QPixmap(QImage(ImageQt(image_PIL)))
+            return QPixmap(QImage(ImageQt(image_PIL.resize((396, 396),PILImage.ANTIALIAS))))
         else:
             return image_PIL
         
